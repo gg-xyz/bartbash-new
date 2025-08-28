@@ -1,15 +1,527 @@
 <!DOCTYPE html>
-<html lang="">
-  <head>
+<html lang="en">
+<head>
     <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
-    <a href="./0.06/neighbor.html">Version 0.06</a>
-    <br>
-    <a href="./0.065/bart.html">Version 0.065</a>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BartBash Archive</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
+    <style>
+        /* ImGui Dark Theme */
+        :root {
+            --imgui-text: #ffffff;
+            --imgui-text-disabled: #808080;
+            --imgui-window-bg: rgba(15, 15, 15, 0.94);
+            --imgui-border: rgba(110, 110, 128, 0.50);
+            --imgui-frame-bg: rgba(41, 74, 122, 0.54);
+            --imgui-frame-bg-hovered: rgba(66, 150, 250, 0.40);
+            --imgui-frame-bg-active: rgba(66, 150, 250, 0.67);
+            --imgui-title-bg: #0a0a0a;
+            --imgui-title-bg-active: rgba(41, 74, 122, 1.0);
+            --imgui-button: rgba(66, 150, 250, 0.40);
+            --imgui-button-hovered: rgba(66, 150, 250, 1.00);
+            --imgui-button-active: rgba(15, 135, 250, 1.00);
+            --imgui-checkmark: #4297FA;
+            --imgui-separator: rgba(110, 110, 128, 0.30);
+        }
 
-    <p>i suck ass at coding</p>
-    <p>26/08/2025 - Added 0.065</p>
-  </body>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, "Consolas", "Monaco", "Courier New", monospace;
+            font-size: 13px;
+            background: #1a1a1a;
+            color: var(--imgui-text);
+            line-height: 1.5;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Background Pattern */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(45deg, transparent 30%, rgba(66, 150, 250, 0.02) 30%, rgba(66, 150, 250, 0.02) 70%, transparent 70%),
+                linear-gradient(-45deg, transparent 30%, rgba(66, 150, 250, 0.02) 30%, rgba(66, 150, 250, 0.02) 70%, transparent 70%);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* ImGui Sidebar */
+        .imgui-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 60px;
+            height: 100vh;
+            background: var(--imgui-window-bg);
+            border-right: 1px solid var(--imgui-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 0;
+            z-index: 1000;
+        }
+
+        .imgui-sidebar-item {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--imgui-text-disabled);
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.1s ease;
+            margin: 2px 0;
+        }
+
+        .imgui-sidebar-item:hover {
+            background: var(--imgui-frame-bg-hovered);
+            color: var(--imgui-text);
+        }
+
+        .imgui-sidebar-item.active {
+            background: var(--imgui-button-active);
+            color: var(--imgui-text);
+        }
+
+        .imgui-sidebar-divider {
+            width: 32px;
+            height: 1px;
+            background: var(--imgui-separator);
+            margin: 8px 0;
+        }
+
+
+
+        /* Main Content */
+        .imgui-content {
+            margin-left: 60px;
+            padding: 16px;
+            min-height: 100vh;
+        }
+
+        /* ImGui Windows */
+        .imgui-window {
+            background: var(--imgui-window-bg);
+            border: 1px solid var(--imgui-border);
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .imgui-window-title {
+            background: var(--imgui-title-bg);
+            color: var(--imgui-text-disabled);
+            padding: 6px 12px;
+            font-size: 12px;
+            border-bottom: 1px solid var(--imgui-border);
+            font-weight: bold;
+        }
+
+        .imgui-window-title.active {
+            background: var(--imgui-title-bg-active);
+            color: var(--imgui-text);
+        }
+
+        .imgui-window-content {
+            padding: 16px;
+        }
+
+        /* ImGui Components */
+        .imgui-button {
+            background: var(--imgui-button);
+            border: none;
+            color: var(--imgui-text);
+            padding: 6px 12px;
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.1s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .imgui-button:hover {
+            background: var(--imgui-button-hovered);
+        }
+
+        .imgui-button:active {
+            background: var(--imgui-button-active);
+        }
+
+        .imgui-separator {
+            height: 1px;
+            background: var(--imgui-separator);
+            margin: 12px 0;
+        }
+
+        .imgui-text {
+            color: var(--imgui-text);
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .imgui-text-disabled {
+            color: var(--imgui-text-disabled);
+        }
+
+        .imgui-horizontal {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .imgui-vertical {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Version Links */
+        .version-link {
+            background: var(--imgui-frame-bg);
+            border: 1px solid var(--imgui-border);
+            color: var(--imgui-checkmark);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            transition: all 0.1s ease;
+            font-weight: 500;
+        }
+
+        .version-link:hover {
+            background: var(--imgui-frame-bg-hovered);
+            border-color: var(--imgui-checkmark);
+        }
+
+        .version-link::before {
+            content: "🎮";
+            font-size: 16px;
+        }
+
+        /* Alert Box */
+        .imgui-alert {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            padding: 12px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+        }
+
+        .imgui-alert-title {
+            color: #ffc107;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Code Block */
+        .imgui-code {
+            background: var(--imgui-title-bg);
+            border: 1px solid var(--imgui-border);
+            padding: 12px;
+            font-family: "Courier New", monospace;
+            font-size: 11px;
+            color: var(--imgui-text-disabled);
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+
+        /* Grid Layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .imgui-sidebar {
+                width: 50px;
+            }
+            
+            .imgui-content {
+                margin-left: 50px;
+            }
+        }
+
+        /* Status Bar */
+        .imgui-status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 60px;
+            right: 0;
+            height: 24px;
+            background: var(--imgui-title-bg);
+            border-top: 1px solid var(--imgui-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-size: 11px;
+            color: var(--imgui-text-disabled);
+        }
+    </style>
+</head>
+<body>
+    <!-- ImGui Sidebar -->
+        <div class="imgui-sidebar">
+        <div style="margin-bottom: 16px;">
+            <span class="material-symbols-outlined" style="color: var(--imgui-checkmark); font-size: 32px;">sports_esports</span>
+        </div>
+        <div class="imgui-sidebar-divider"></div>
+        <a href="#" class="imgui-sidebar-item active">
+            <span class="material-symbols-outlined">home</span>
+        </a>
+        <div class="imgui-sidebar-divider"></div>
+        <a href="https://github.com/gg-xyz/bartbash-new/issues" class="imgui-sidebar-item" target="_blank">
+            <span class="material-symbols-outlined">bug_report</span>
+        </a>
+        <div class="imgui-sidebar-divider"></div>
+        <a href="#blog" class="imgui-sidebar-item">
+            <span class="material-symbols-outlined">article</span>
+        </a>
+        <div class="imgui-sidebar-divider"></div>
+        <a href="https://github.com/gg-xyz/bartbash-new/" class="imgui-sidebar-item" target="_blank">
+            <span class="material-symbols-outlined">code</span>
+        </a>
+    </div>
+
+
+
+    <!-- Main Content -->
+    <div class="imgui-content">
+        <!-- Important Notice -->
+        <div class="imgui-window">
+            <div class="imgui-window-title active">⚠️ Important Notice</div>
+            <div class="imgui-window-content">
+                <div class="imgui-alert">
+                    <div class="imgui-alert-title">
+                        <span class="material-symbols-outlined">info</span>
+                        Support the Original Developers
+                    </div>
+                    <div class="imgui-text">
+                        This is an archive of BartBash. Please support the original developers at teleSTOP! 
+                        This archive is provided for historical preservation and educational access when the main site is blocked or something
+                    </div>
+                    <div class="imgui-horizontal" style="margin-top: 12px;">
+                        <a href="https://www.bartbash.com" target="_blank" class="imgui-button">
+                            <span class="material-symbols-outlined">open_in_new</span>
+                            Official BartBash Site
+                        </a>
+                        <a href="https://bartbash-new.vercel.app" target="_blank" class="imgui-button">
+                            <span class="material-symbols-outlined">link</span>
+                            Archive Access
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Available Versions -->
+            <div class="imgui-window" id="versions">
+                <div class="imgui-window-title active">Available Versions</div>
+                <div class="imgui-window-content">
+                    <div class="imgui-text" style="margin-bottom: 16px; color: var(--imgui-text-disabled);">
+                        Access different versions of BartBash:
+                    </div>
+                    
+                    <a href="./0.06/neighbor.html" class="version-link">
+                        <div class="imgui-vertical" style="gap: 4px;">
+                            <div>BartBash v0.06</div>
+                            <div style="font-size: 11px; color: var(--imgui-text-disabled);">Date: N/A</div>
+                        </div>
+                    </a>
+                    
+                    <a href="./0.065/bart.html" class="version-link">
+                        <div class="imgui-vertical" style="gap: 4px;">
+                            <div>BartBash v0.065</div>
+                            <div style="font-size: 11px; color: var(--imgui-text-disabled);">Date: 26/08/2025</div>
+                        </div>
+                    </a>
+
+                    <div class="imgui-separator"></div>
+
+                    <div class="imgui-horizontal">
+                        <span class="material-symbols-outlined" style="color: var(--imgui-text-disabled);">update</span>
+                        <div class="imgui-vertical">
+                            <div class="imgui-text" style="font-weight: bold; margin-bottom: 4px;">Release Notes</div>
+                            <div class="imgui-text-disabled" style="font-size: 11px;">26/08/2025 - Added version 0.065</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Repository & Development -->
+            <div class="imgui-window">
+                <div class="imgui-window-title active">Development & Source</div>
+                <div class="imgui-window-content">
+                    <div class="imgui-horizontal" style="margin-bottom: 16px;">
+                        <span class="material-symbols-outlined" style="color: var(--imgui-checkmark);">code</span>
+                        <div class="imgui-vertical">
+                            <div class="imgui-text" style="font-weight: bold;">Archive Repository</div>
+                            <div class="imgui-text-disabled" style="font-size: 11px;">Archive files and documentation</div>
+                        </div>
+                    </div>
+
+                    <a href="https://github.com/gg-xyz/bartbash-new/" target="_blank" class="imgui-button" style="width: 100%; justify-content: center; margin-bottom: 8px;">
+                        <span class="material-symbols-outlined">launch</span>
+                        View Repository
+                    </a>
+
+                    <a href="https://github.com/gg-xyz/bartbash-new/issues" target="_blank" class="imgui-button" style="width: 100%; justify-content: center; margin-bottom: 12px;">
+                        <span class="material-symbols-outlined">bug_report</span>
+                        Report Issues
+                    </a>
+
+                    <div class="imgui-separator"></div>
+
+                    <div class="imgui-code">
+                        Archive Status:<br>
+                        v0.06 - Archived<br>
+                        v0.065 - Archived (26/08/2025)
+                    </div>
+
+                    <div class="imgui-text" style="text-align: center; color: var(--imgui-text-disabled); margin-top: 12px; font-style: italic;">
+                        Archive maintained by community contributor
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About This Archive -->
+        <div class="imgui-window">
+            <div class="imgui-window-title active">About BartBash Archive</div>
+            <div class="imgui-window-content">
+                <div class="imgui-horizontal" style="margin-bottom: 16px;">
+                    <span class="material-symbols-outlined" style="color: var(--imgui-checkmark); font-size: 24px;">library_books</span>
+                    <div class="imgui-vertical">
+                        <div class="imgui-text" style="font-weight: bold; font-size: 16px;">Archive & Mirror</div>
+                        <div class="imgui-text-disabled">Preserving BartBash history for educational access</div>
+                    </div>
+                </div>
+
+                <div class="imgui-text" style="margin-bottom: 16px;">
+                    This archive contains playable builds of BartBash for historical preservation and educational purposes. 
+                    All content is provided as-is for community access when the main site is unavailable.
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 12px; background: var(--imgui-frame-bg); padding: 12px; border-radius: 4px; margin: 16px 0;">
+                    <span class="material-symbols-outlined" style="color: var(--imgui-checkmark);">verified</span>
+                    <div class="imgui-vertical">
+                        <div class="imgui-text" style="font-weight: bold;">Archive Verification</div>
+                        <div class="imgui-text-disabled" style="font-size: 11px;">Official builds confirmed - see documentation</div>
+                    </div>
+                </div>
+
+                <div class="imgui-separator"></div>
+
+                <div class="imgui-text" style="font-weight: bold; margin-bottom: 8px;">Archive Information:</div>
+                <div class="imgui-vertical" style="gap: 6px;">
+                    <div class="imgui-horizontal">
+                        <span class="material-symbols-outlined" style="color: var(--imgui-checkmark); font-size: 16px;">check_circle</span>
+                        <span>Educational archive for historical preservation</span>
+                    </div>
+                    <div class="imgui-horizontal">
+                        <span class="material-symbols-outlined" style="color: var(--imgui-checkmark); font-size: 16px;">check_circle</span>
+                        <span>Contains original builds without modification</span>
+                    </div>
+                    <div class="imgui-horizontal">
+                        <span class="material-symbols-outlined" style="color: var(--imgui-checkmark); font-size: 16px;">check_circle</span>
+                        <span>Always support the original developers</span>
+                    </div>
+                    <div class="imgui-horizontal">
+                        <span class="material-symbols-outlined" style="color: var(--imgui-checkmark); font-size: 16px;">check_circle</span>
+                        <span>Community maintained for accessibility</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Developer Blog -->
+        <div class="imgui-window" id="blog">
+            <div class="imgui-window-title active">Developer Blog</div>
+            <div class="imgui-window-content">
+                <div class="imgui-horizontal" style="margin-bottom: 16px;">
+                    <span class="material-symbols-outlined" style="color: var(--imgui-checkmark); font-size: 24px;">edit_note</span>
+                    <div class="imgui-vertical">
+                        <div class="imgui-text" style="font-weight: bold; font-size: 16px;">Archive Updates & Notes</div>
+                        <div class="imgui-text-disabled">Development updates from the archive maintainer</div>
+                    </div>
+                </div>
+
+                <!-- Blog Post -->
+                <div class="blog-post" style="background: var(--imgui-frame-bg); border-left: 4px solid var(--imgui-checkmark); padding: 16px; border-radius: 4px;">
+                    <div class="blog-header" style="margin-bottom: 12px;">
+                        <div class="blog-date" style="color: var(--imgui-text-disabled); font-size: 11px; margin-bottom: 4px;">26/08/2025</div>
+                        <div class="blog-title" style="font-weight: bold; font-size: 14px; color: var(--imgui-text);">Added new version</div>
+                    </div>
+                    <div class="blog-content" style="color: var(--imgui-text); line-height: 1.4;">
+                        yes im aware the audio is broken ill fix it later i swear this wont be like goodk2 i swear believe me
+                    </div>
+                </div>
+
+                <div class="imgui-separator"></div>
+
+                <div class="imgui-text-disabled" style="text-align: center; font-size: 11px; font-style: italic;">
+                    ill add more posts per update
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="imgui-status-bar">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span>BartBash Archive</span>
+            <span>•</span>
+            <span>2 versions</span>
+            <span>•</span>
+            <span>Ready</span>
+        </div>
+        <div id="current-time"></div>
+    </div>
+
+    <script>
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = now.toLocaleTimeString();
+        }
+        
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Sidebar navigation
+        document.querySelector('a[href="#blog"]').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('blog').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
 </html>
